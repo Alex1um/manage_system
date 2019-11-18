@@ -39,9 +39,16 @@ class Admin(Role):
                 lst[2::3] = [i + '\n' for i in lst[2::3]]
                 return ' '.join(lst)
             except Exception as f:
-                return str(f), str
+                return str(f)
+        elif params[:1] == ['пользователи']:
+            try:
+                lst = tuple(*zip(*cn.cls.sql.execute(f'SELECT login from users').fetchall()))
+                return '\n'.join(lst)
+            except Exception as f:
+                return str(f)
         elif params[:1] == ['?']:
-            return '? история'
+            return '''история {пользователь} - Просмотр активности пользователя; пример: история admin
+пользователи - список пользователей'''
 
 
 class Storekeeper(Role):
