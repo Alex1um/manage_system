@@ -47,7 +47,7 @@ class Connection(Thread):
                 self.cls.attempts[self.adr[0]] -= 1
                 a = self.cls.attempts[self.adr[0]]
                 self.send('Неправильный логин или пароль\nОсталось попыток ' + str(a) if a else 'Вы заблокированы на 5 минут')
-                if self.cls.attempts[self.adr[0]] == 0:
+                if not self.cls.attempts[self.adr[0]]:
                     self.close_connection()
                     self.cls.timed.add(self.adr[0])
                     time.sleep(600)
