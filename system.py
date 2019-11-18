@@ -53,6 +53,8 @@ class Connection(Thread):
                     time.sleep(600)
                     self.cls.timed.remove(self.adr[0])
                     return False
+        else:
+            self.send('Введите данные корректно')
 
     def send(self, msg):
         self.conn.send(str(msg).encode('utf-8'))
@@ -78,6 +80,7 @@ class Program:
         self.timed = set()
         self.attempts = {}
         self.sql = sqlite3.connect('users.db', check_same_thread=False)
+        print('Система запущена успешно')
 
     def run(self):
         while 1:
@@ -96,5 +99,6 @@ class Program:
             time.sleep(0.02)
 
 
-a = Program(745)
+port = input('Введите порт\n')
+a = Program(int(port))
 a.run()
