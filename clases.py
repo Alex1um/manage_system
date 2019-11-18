@@ -35,9 +35,11 @@ class Admin(Role):
                 lst = cn.cls.sql.execute(f'SELECT times from users'
                                          f' where login = "{params[1]}"'
                                          ).fetchone()[0]
-                lst = ast.literal_eval(lst)
-                lst[2::3] = [i + '\n' for i in lst[2::3]]
-                return ' '.join(lst)
+                if lst:
+                    lst = ast.literal_eval(lst)
+                    lst[2::3] = [i + '\n' for i in lst[2::3]]
+                    return ' '.join(lst)
+                return 'None'
             except Exception as f:
                 return str(f)
         elif params[:1] == ['пользователи']:
