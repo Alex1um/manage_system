@@ -41,7 +41,7 @@ class Connection(Thread):
             if res is not None:
                 del self.cls.attempts[self.adr[0]]
                 self.user = eval(f'{res[-2]}("{res[1]}", "{self.adr[0]}", "{res[-1]}")')
-                self.send('Вы вошли как ' + res[-2])
+                self.send(f'Вы вошли как {res[-2]}\nВведите ? для списка команд')
                 self.logined = True
             else:
                 self.cls.attempts[self.adr[0]] -= 1
@@ -87,7 +87,7 @@ class Program:
                     conn.settimeout(30)
                     self.connections.append(Connection(conn, adr, self))
                     self.connections[-1].start()
-                    print('New connection on ' + adr[0])
+                    print(f'Новое соединение: {adr[0]}:{adr[1]} - {time.strftime("%d.%m.%Y %H:%M:%S")}')
                     print('Текущие пользователи:', *self.connections)
                 else:
                     conn.close()
