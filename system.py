@@ -13,8 +13,7 @@ class Connection(Thread):
         self.conn, self.adr = conn, adr
         self.logined = False
         self.cls = cls
-        if self.adr[0] not in self.cls.attempts.keys():
-            self.cls.attempts[self.adr[0]] = 3
+        self.cls.attempts[self.adr[0]] = 3
         self.send('Введите логин и пароль')
 
     def run(self):
@@ -22,7 +21,7 @@ class Connection(Thread):
             try:
                 data = self.conn.recv(1024).decode('utf-8')
                 if not self.logined:
-                    if self.login(data) == False:
+                    if self.login(data) is False:
                         break
                 else:
                     self.send(self.user.execute(data, self))
@@ -30,6 +29,7 @@ class Connection(Thread):
                 print(f)
                 self.close_connection()
                 break
+            time.sleep(0.02)
 
     def login(self, data):
         params = data.split()
@@ -45,11 +45,11 @@ class Connection(Thread):
                 self.logined = True
             else:
                 self.cls.attempts[self.adr[0]] -= 1
-                self.send('Неправильный логин или пароль\nОсталось попыток ' + str(self.cls.attempts[self.adr[0]]))
-                if not self.cls.attempts[self.adr[0]]:
-                    # self.close_connection()
+                a = self.cls.attempts[self.adr[0]]
+                self.send('Неправильный логин или пароль\nОсталось попыток ' + str(a) if a else 'Вы заблокированы на 5 минут')
+                if self.cls.attempts[self.adr[0]] == 0:
+                    self.close_connection()
                     self.cls.timed.add(self.adr[0])
-                    self.send('Вы заблокированы на 5 минут.')
                     time.sleep(600)
                     self.cls.timed.remove(self.adr[0])
                     return False
@@ -84,21 +84,17 @@ class Program:
             conn, adr = self.socket.accept()
             try:
                 if adr[0] not in self.timed:
-                    conn.settimeout(60)
+                    conn.settimeout(30)
                     self.connections.append(Connection(conn, adr, self))
                     self.connections[-1].start()
                     print('New connection on ' + adr[0])
                     print('Текущие пользователи:', *self.connections)
                 else:
                     conn.close()
-            except:
-                pass
+            except Exception as f:
+                print(f)
+            time.sleep(0.02)
 
 
-a = Program(8080)
+a = Program(745)
 a.run()
-while 1:
-    try:
-        exec(input())
-    except Exception as f:
-        print(f)
