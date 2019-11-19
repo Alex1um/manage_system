@@ -3,20 +3,16 @@ import struct
 import time
 
 
-def receiver(group):
-    MYPORT = 745
+def receiver(group, port=48666):
     # Look up multicast group address in name server and find out IP version
     addrinfo = socket.getaddrinfo(group, None)[0]
-
-    # Create a socket
     s = socket.socket(addrinfo[0], socket.SOCK_DGRAM)
-
     # Allow multiple copies of this program on one machine
     # (not strictly needed)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.settimeout(5)
     # Bind it to the port
-    s.bind(('', MYPORT))
+    s.bind(('', port))
 
     group_bin = socket.inet_pton(addrinfo[0], addrinfo[4][0])
     # Join group
@@ -33,17 +29,21 @@ connected = False
 con.settimeout(5)
 while 1:
     if not connected:
+        s = input('Куда хотите подключиться?(ip:порт)\nЕсли не знаете, нажмите Enter\n').replace('*', '')
+        s = s.split(':') if ':' in s else s.split()
+        port = 48666
         try:
-            ip, port = input('Куда хотите подключиться?(ip:port)\n').split(':')
-            con.connect((ip, int(port)))
+            if len(s) > 1:
+                ip, port = s
+                if port and ip:
+                    con.connect((ip, int(port)))
+                    connected = True
+                    continue
+            port, sender = receiver('225.0.0.250', port=int(port))
+            con.connect((sender[0], int(port.decode('utf-8'))))
             connected = True
         except Exception as f:
-            try:
-                port, sender = receiver('224.0.0.1')
-                con.connect((sender[0], int(port.decode('utf-8'))))
-                connected = True
-            except Exception as f:
-                print(f)
+            print(f)
     try:
         res = con.recv(1024).decode('utf-8')
         if not res:
