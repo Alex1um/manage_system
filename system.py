@@ -85,8 +85,8 @@ class Program:
         self.attempts = {}
         self.port = port
         self.sql = sqlite3.connect('users.db', check_same_thread=False)
-        print('Система запущена успешно')
         Thread(target=self.sender, args=['225.0.0.250']).start()
+        print('Система запущена успешно и готова принимать подключения')
 
     def sender(self, group):
         data = self.port.encode('utf-8')

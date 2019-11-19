@@ -29,7 +29,9 @@ connected = False
 con.settimeout(5)
 while 1:
     if not connected:
-        s = input('Куда хотите подключиться?(ip:порт)\nЕсли не знаете, нажмите Enter\n').replace('*', '')
+        s = input('Куда хотите подключиться?(ip:порт)\n'
+                  'Если не знаете одну из частей, замените ее на *\n'
+                  'Если не знаете, нажмите Enter\n').replace('*', '')
         s = s.split(':') if ':' in s else s.split()
         port = 48666
         try:
