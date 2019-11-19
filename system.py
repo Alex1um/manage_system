@@ -74,7 +74,9 @@ class Program:
 
     def __init__(self, port):
         self.socket = socket.socket()
-        self.socket.bind(("", port))
+        if not port:
+            port = '745'
+        self.socket.bind(("", int(port)))
         self.socket.listen(10)
         self.connections = []
         self.timed = set()
@@ -99,6 +101,6 @@ class Program:
             time.sleep(0.02)
 
 
-port = input('Введите порт\n')
-a = Program(int(port))
+port = input('Введите порт, если не знаете, нажмите Enter\n')
+a = Program(port)
 a.run()
