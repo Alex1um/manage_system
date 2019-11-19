@@ -3,7 +3,8 @@ from threading import Thread
 import sqlite3
 import time
 from clases import *
-
+import mcast
+import struct
 
 class Connection(Thread):
     conn: socket.socket
@@ -70,6 +71,8 @@ class Connection(Thread):
         return f'{self.adr[0]}:{self.adr[1]}'
 
 
+
+
 class Program:
 
     def __init__(self, port):
@@ -81,8 +84,26 @@ class Program:
         self.connections = []
         self.timed = set()
         self.attempts = {}
+        self.port = port
         self.sql = sqlite3.connect('users.db', check_same_thread=False)
         print('Система запущена успешно')
+        Thread(target=self.sender, args=['224.0.0.1']).start()
+
+    def sender(self, group):
+        data = self.port.encode('utf-8')
+        MYTTL = 1
+        addrinfo = socket.getaddrinfo(group, None)[0]
+
+        s = socket.socket(addrinfo[0], socket.SOCK_DGRAM)
+
+        # Set Time-to-live (optional)
+        ttl_bin = struct.pack('@i', MYTTL)
+        if addrinfo[0] == socket.AF_INET:  # IPv4
+            s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl_bin)
+
+        while True:
+            s.sendto(data, (addrinfo[4][0], int(self.port)))
+            time.sleep(1)
 
     def run(self):
         while 1:
@@ -99,6 +120,8 @@ class Program:
             except Exception as f:
                 print(f)
             time.sleep(0.02)
+
+
 
 
 port = input('Введите порт, если не знаете, нажмите Enter\n')
