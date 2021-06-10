@@ -37,7 +37,9 @@ class Admin(Role):
                                          ).fetchone()[0]
                 if lst:
                     lst = ast.literal_eval(lst)
-                    lst[2::3] = [i + '\n' for i in lst[2::3]]
+                    lst[2::3] = [" Вышел: " + i + '\n' for i in lst[2::3]]
+                    lst[0::3] = ["Был выполнен вход с ip: " + i for i in lst[0::3]]
+                    lst[1::3] = [" Вошел: " + i for i in lst[1::3]]
                     return ' '.join(lst)
                 return 'None'
             except Exception as f:
