@@ -1,5 +1,5 @@
 # User management system written with sockets
-A small scket user system
+A small socket client-server system
 ---
 features:
 + User history
